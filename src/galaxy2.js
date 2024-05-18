@@ -4,10 +4,10 @@ import * as THREE from 'three'
 const parameters2 = {
     count: 30000,
     size: 0.015,
-    radius: 5.0,
-    branches: 4,
-    spin: 1.0,
-    randomness: 1.0,
+    radius: 3.54,
+    branches: 6,
+    spin: - 1.3,
+    randomness: 0.2,
     randomnessPower: 3.0,
     insideColor: '#ffad5c',
     outsideColor: '#1b1b1e'

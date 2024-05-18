@@ -1,8 +1,15 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import GUI from 'lil-gui'
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 import { parameters1, generateGalaxy1 } from './galaxy1.js'
 import { parameters2, generateGalaxy2 } from './galaxy2.js'
+
+/**
+ * Loaders
+ */
+// ...
+const rgbeLoader = new RGBELoader()
 
 /**
  * Base
@@ -23,11 +30,26 @@ const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
+// scene.background = environmentMap
+
+/**
+ * Environment map
+ */
+// HDR (RGBE) equirectangular
+rgbeLoader.load('HDR_hazy_nebulae_2.hdr', (environmentMap) =>
+    {
+        // console.log(environmentMap)
+        environmentMap.mapping = THREE.EquirectangularReflectionMapping
+
+        scene.background = environmentMap
+        scene.environment = environmentMap
+    })
+    
+
 
 // Generate Galaxies
 const points1 = generateGalaxy1(scene)
 const points2 = generateGalaxy2(scene)
-
 
 
 /**
@@ -88,9 +110,9 @@ window.addEventListener('resize', () =>
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.x = 5
-camera.position.y = 5
-camera.position.z = 3
+camera.position.x = -8
+camera.position.y = 4
+camera.position.z = 5
 scene.add(camera)
 
 // Controls
@@ -120,8 +142,8 @@ const tick = () =>
 
     // // Rotate
     if (points1 || points2) {
-        points1.rotation.y = elapsedTime * 0.1
-        points2.rotation.y = elapsedTime * 0.1
+        points1.rotation.y =  - elapsedTime * 0.1
+        points2.rotation.y = - elapsedTime * 0.16
     }
    
 
