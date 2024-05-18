@@ -4,6 +4,7 @@ import GUI from 'lil-gui'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 import { parameters1, generateGalaxy1 } from './galaxy1.js'
 import { parameters2, generateGalaxy2 } from './galaxy2.js'
+import { parameters3, generateGalaxy3 } from './galaxy3.js'
 
 /**
  * Loaders
@@ -30,13 +31,12 @@ const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
-// scene.background = environmentMap
 
 /**
  * Environment map
  */
 // HDR (RGBE) equirectangular
-rgbeLoader.load('HDR_hazy_nebulae_2.hdr', (environmentMap) =>
+rgbeLoader.load('HDR_hazy_nebulae_1.hdr', (environmentMap) =>
     {
         // console.log(environmentMap)
         environmentMap.mapping = THREE.EquirectangularReflectionMapping
@@ -50,6 +50,7 @@ rgbeLoader.load('HDR_hazy_nebulae_2.hdr', (environmentMap) =>
 // Generate Galaxies
 const points1 = generateGalaxy1(scene)
 const points2 = generateGalaxy2(scene)
+const points3 = generateGalaxy3(scene)
 
 
 /**
@@ -81,6 +82,17 @@ galaxy2Folder.addColor(parameters2, 'insideColor').onFinishChange(() => generate
 galaxy2Folder.addColor(parameters2, 'outsideColor').onFinishChange(() => generateGalaxy2(scene))
 
 
+// GUI for Galaxy 3
+const galaxy3Folder = gui.addFolder('Galaxy 3')
+galaxy3Folder.add(parameters3, 'count').min(100).max(100000).step(100).onFinishChange(() => generateGalaxy3(scene))
+galaxy3Folder.add(parameters3, 'size').min(0.001).max(0.1).step(0.001).onFinishChange(() => generateGalaxy3(scene))
+galaxy3Folder.add(parameters3, 'radius').min(0.01).max(20).step(0.01).onFinishChange(() => generateGalaxy3(scene))
+galaxy3Folder.add(parameters3, 'branches').min(2).max(20).step(1).onFinishChange(() => generateGalaxy3(scene))
+galaxy3Folder.add(parameters3, 'spin').min(-5).max(5).step(0.001).onFinishChange(() => generateGalaxy3(scene))
+galaxy3Folder.add(parameters3, 'randomness').min(0).max(2).step(0.001).onFinishChange(() => generateGalaxy3(scene))
+galaxy3Folder.add(parameters3, 'randomnessPower').min(1).max(10).step(0.001).onFinishChange(() => generateGalaxy3(scene))
+galaxy3Folder.addColor(parameters3, 'insideColor').onFinishChange(() => generateGalaxy3(scene))
+galaxy3Folder.addColor(parameters3, 'outsideColor').onFinishChange(() => generateGalaxy3(scene))
 
 /**
  * Sizes
@@ -141,9 +153,10 @@ const tick = () =>
     controls.update()
 
     // // Rotate
-    if (points1 || points2) {
+    if (points1 || points2 || points3) {
         points1.rotation.y =  - elapsedTime * 0.1
-        points2.rotation.y = - elapsedTime * 0.16
+        points2.rotation.y = - elapsedTime * 0.2
+        points3.rotation.y = - elapsedTime * 0.05
     }
    
 

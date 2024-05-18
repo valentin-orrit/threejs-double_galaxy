@@ -10,7 +10,7 @@ const parameters2 = {
     randomness: 0.2,
     randomnessPower: 3.0,
     insideColor: '#ffad5c',
-    outsideColor: '#1b1b1e'
+    outsideColor: '#142225'
 }
 
 let geometry2 = null
@@ -74,3 +74,4 @@ const generateGalaxy2 = (scene) => {
 }
 
 export { parameters2, generateGalaxy2 }
+
