@@ -16,11 +16,15 @@ import { parameters3, generateGalaxy3 } from './galaxy3.js'
 const loadingBarElement = document.querySelector('.loading-bar')
 const loadingManager = new THREE.LoadingManager(
     // Loaded
-    () =>
+    () => 
+    {
+        gsap.delayedCall(0.5, () =>
         {
-            gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0 })
-        },
-    
+            gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0, delay: 1 })
+            loadingBarElement.classList.add('ended')
+            loadingBarElement.style.transform = ''
+        })
+    },
 
     // Progress
     (itemUrl, itemsLoaded, itemsTotal) =>
