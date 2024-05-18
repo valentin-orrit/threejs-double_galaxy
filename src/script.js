@@ -1,7 +1,11 @@
+// Dependencies
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import GUI from 'lil-gui'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
+import { gsap } from 'gsap'
+
+// import
 import { parameters1, generateGalaxy1 } from './galaxy1.js'
 import { parameters2, generateGalaxy2 } from './galaxy2.js'
 import { parameters3, generateGalaxy3 } from './galaxy3.js'
@@ -9,8 +13,25 @@ import { parameters3, generateGalaxy3 } from './galaxy3.js'
 /**
  * Loaders
  */
-// ...
-const rgbeLoader = new RGBELoader()
+const loadingBarElement = document.querySelector('.loading-bar')
+const loadingManager = new THREE.LoadingManager(
+    // Loaded
+    () =>
+        {
+            gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0 })
+        },
+    
+
+    // Progress
+    (itemUrl, itemsLoaded, itemsTotal) =>
+        {
+            // Calculate the progress and update the loadingBarElement
+            const progressRatio = itemsLoaded / itemsTotal
+            loadingBarElement.style.transform = `scaleX(${progressRatio})`
+        }
+)
+
+const rgbeLoader = new RGBELoader(loadingManager)
 
 /**
  * Base
@@ -32,6 +53,36 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
+
+/**
+ * Overlay
+ */
+const overlayGeometry = new THREE.PlaneGeometry(2, 2, 1, 1)
+const overlayMaterial = new THREE.ShaderMaterial({
+    // wireframe: true,
+    transparent: true,
+    uniforms:
+    {
+        uAlpha: { value: 1 }
+    },
+    vertexShader: `
+        void main()
+        {
+            gl_Position = vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        uniform float uAlpha;
+
+        void main()
+        {
+            gl_FragColor = vec4(0.0, 0.0, 0.0, uAlpha);
+        }
+    `
+})
+const overlay = new THREE.Mesh(overlayGeometry, overlayMaterial)
+scene.add(overlay)
+
 /**
  * Environment map
  */
@@ -44,8 +95,6 @@ rgbeLoader.load('HDR_hazy_nebulae_1.hdr', (environmentMap) =>
         scene.background = environmentMap
         scene.environment = environmentMap
     })
-    
-
 
 // Generate Galaxies
 const points1 = generateGalaxy1(scene)
@@ -56,7 +105,6 @@ const points3 = generateGalaxy3(scene)
 /**
  * GUI parameters
  */
-
 // GUI for Galaxy 1
 const galaxy1Folder = gui.addFolder('Galaxy 1')
 galaxy1Folder.add(parameters1, 'count').min(100).max(100000).step(100).onFinishChange(() => generateGalaxy1(scene))
